@@ -3,8 +3,8 @@
 # Parrot OS Alternative Install - All copyrights (©) are owned by: Lorenzo "Palinuro" Faletra
 # Credits: @kyb3rvizsla (Kyb3r Vizsla <kyb3rvizsla.com>)
 
-#---------- Varibles ----------
-# Colours
+#---------- Variables ----------
+# Define color variables for formatting output
 endColor="\e[0m\e[0m"
 redColor="\e[0;31m\e[1m"
 blueColor="\e[0;34m\e[1m"
@@ -15,9 +15,10 @@ purpleColor="\e[0;35m\e[1m"
 yellowColor="\e[0;33m\e[1m"
 turquoiseColor="\e[0;36m\e[1m"
 
+# Define a dot character for formatting output
 dot="${redColor}[${endColor}${yellowColor}*${endColor}${redColor}] ${endColor}"
 
-# CTRL + C
+# Trap CTRL + C to exit gracefully
 trap ctrl_c INT
 
 function ctrl_c() {
@@ -25,11 +26,12 @@ function ctrl_c() {
     exit
 }
 
-# Prompt
+# Prompt format for user input
 prompt=$(echo -e "${redColor}\n┌─[root${endColor}${yellowColor}@${endColor}${cyanColor}parrot${endColor}${redColor}]-[${endColor}${greenColor}/parrot-installer${endColor}${redColor}]\n└──╼ ${endColor}")
 
 #---------- Install Functions ----------
 
+# Function to install core components of Parrot OS
 function core_install() {
 	apt update
 	apt install -y bash wget gnupg
@@ -46,22 +48,27 @@ function core_install() {
 	apt install -y parrot-core
 }
 
+# Function to install headless edition of Parrot OS
 function headless_install() {
 	apt -y --allow-downgrades install parrot-pico
 }
 
+# Function to install security edition of Parrot OS
 function security_install() {
 	apt --allow-downgrades install -y parrot-interface parrot-interface-full parrot-mate parrot-tools-full parrot-drivers parrot-crypto parrot-privacy parrot-devel firefox
 }
 
+# Function to install home edition of Parrot OS
 function home_install() {
 	apt --allow-downgrades install -y parrot-interface parrot-interface-full parrot-mate parrot-drivers parrot-privacy firefox vscodium zeal
 }
 
+# Function to install embedded edition of Parrot OS
 function embedded_install() {
 	apt -y --allow-downgrades install parrot-interface parrot-mini
 }
 
+# Function to install Parrot OS repositories
 function repos_install() {
 	apt update
 	apt install -y bash gnupg
@@ -71,6 +78,7 @@ function repos_install() {
 }
 
 #---------- Script Functions ----------
+# Function to display menu options to the user
 function menu() {
 	clear
     echo -e "${blueColor} ______                              _____                      _ _       _                _            ${endColor}"
@@ -87,13 +95,15 @@ function menu() {
 	echo -e "${yellowColor}5) ${endColor}${blueColor}Install Embedded Edition${endColor}"
 	echo -e "${yellowColor}6) ${endColor}${blueColor}Install Repositories${endColor}"
 
+	# Check if there was an error and display appropriate message
 	if [ "$error" == "0" ]; then
-	echo -e "\n\n${dot}${yellowColor}Option does not exist, retry${endColor}";
+		echo -e "\n\n${dot}${yellowColor}Option does not exist, retry${endColor}";
 	fi;
 
 	read -p "$prompt" option
 }
 
+# Function to initialize the installer
 function init_installer() {
 	menu
 	case $option in
@@ -108,7 +118,7 @@ function init_installer() {
 		2) clear;
 		echo -e "${purpleColor} ╦┌┐┌┌─┐┌┬┐┌─┐┬  ┬  ┬┌┐┌┌─┐  ╦ ╦┌─┐┌─┐┌┬┐┬  ┌─┐┌─┐┌─┐${endColor}"
 		echo -e "${purpleColor} ║│││└─┐ │ ├─┤│  │  │││││ ┬  ╠═╣├┤ ├─┤ │││  ├┤ └─┐└─┐${endColor}"
-		echo -e "${purpleColor} ╩┘└┘└─┘ ┴ ┴ ┴┴─┘┴─┘┴┘└┘└─┘  ╩ ╩└─┘┴ ┴─┴┘┴─┘└─┘└─┘└─┘${endColor}${yellowColor}ooo${endColor}"
+		echo -e "${purpleColor} ╩┘└┘└─┘ ┴ ┴ ┴┴─┘┴─┘┴┘└┘└─┘  ╩ ╩└─┘┴ ┴└─┘┴└─┴ ┴  ┴   ╚═╝─┴┘┴ ┴ ┴└─┘┘└┘${endColor}${yellowColor}ooo${endColor}"
 		core_install;
 		headless_install;
 		echo -e "\n\n${dot}${yellowColor}Parrot OS Headless Installed!!!${endColor}"
@@ -150,7 +160,7 @@ function init_installer() {
 		echo -e "\n\n${dot}${yellowColor}Parrot OS Embedded Installed!!!${endColor}"
 		;;
 
-		*)
+		*) # Handle invalid input
 		error="0"
 		menu
 		;;
@@ -158,7 +168,8 @@ function init_installer() {
 }
 
 #---------- Installer ----------
-if [ `whoami` == "root" ]; then
+# Check if script is running as root and call init_installer function
+if [ "$(id -u)" == "0" ]; then
 	init_installer;
 else
 	echo -e "${yellowColor}R U Drunk? This script needs to be run as ${endColor}${redColor}root${endColor}${yellowColor}!${endColor}";
